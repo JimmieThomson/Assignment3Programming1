@@ -1,6 +1,4 @@
-import java.text.Format;
 import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
 
 public class A3_P1_2022 {
     public static void main(String[] args) {
@@ -239,7 +237,7 @@ class KidsSession extends Session{
 
         //Validating if the rating is real
         for (String variable : Ratings){
-            if(SelectedMovie.getRating() == "G" || SelectedMovie.getRating() == "PG"){
+            if(variable == "G" || variable == "PG"){
                 break;
             }else{
                 throw new Exception("Rating is too high");
@@ -267,13 +265,11 @@ class KidsSession extends Session{
 }
 
 class WeeklyTimeTable{
-    private int WeeklyNumber;
     private String WeekRoster[][] = new String[7][7];
     private String[] Times = {"08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"};
     Session BookedShowings[][] = new Session[7][7];
     
     public WeeklyTimeTable(int weekNum){
-        WeeklyNumber = weekNum;
         for (String[] row: WeekRoster){
             Arrays.fill(row, "    ---    ");
         }
