@@ -15,18 +15,20 @@ public class A3_P1_2022 {
             
             WeeklyTimeTable week1 = new WeeklyTimeTable(1);
             // WeeklyTimeTable week2 = new WeeklyTimeTable(1);  // Exception!
-            //System.out.println(week1.checkAvailability(1,1));
+
+            System.out.println(week1.checkAvailability(1,1));
             //System.out.println(week1.checkAvailability(1,9));  // Exception!
-            //System.out.println(week1.checkAvailability("Monday", "14:00"));
-            // System.out.println(week1.checkAvailability("Monday", "8:00")); 
-            //Exception!
+
+            System.out.println(week1.checkAvailability("Monday", "14:00"));
+           //System.out.println(week1.checkAvailability("Monday", "8:00")); //Exception!
+
             Session s1 = new Session(movieList[0], 18);
             week1.addSession(s1, 2, 2);
             
             //Session s2 = new KidsSession(movieList[0]);  // Exception!
             Session s2 = new KidsSession(movieList[2]); 
             
-            //week1.addSession(s2, 4, 6);  // not successful!
+            week1.addSession(s2, 4, 6);  // not successful!
             week1.addSession(s2, 4, 5);
             week1.showSessions();
             
@@ -86,7 +88,6 @@ class Movie {
         }
     }
 }
-
 class Session{
     private int capacity;
     private int ticketPrice;
@@ -124,6 +125,9 @@ class Session{
     }
     
     public int profit(){
+        if(SelectedMovie.getTitle() == "Top Gun: Maverick"){
+            return (ticketPrice * soldTickets) - 600;
+        }
         return (ticketPrice * soldTickets);
     }
 
@@ -182,15 +186,16 @@ class SparseSession extends Session{
     }
     void ValidateRating(){}
     public int profit(){
-        return (ticketPrice * soldTickets) + startProfit;
+        if(SelectedMovie.getTitle() == "Top Gun: Maverick"){
+            return (ticketPrice * soldTickets) - 600 +startProfit;
+        }
+        return (ticketPrice * soldTickets);
     }
     public boolean getIsKidsSession(){
         return Kids;
     }
 
 }
-
-
 class KidsSession extends Session{
     /*
         KidsSession Function will be used when there are kids involved in the movies
@@ -254,6 +259,9 @@ class KidsSession extends Session{
     }
     
     public int profit(){
+        if(SelectedMovie.getTitle() == "Top Gun: Maverick"){
+            return (ticketPrice * soldTickets) - 600;
+        }
         return (ticketPrice * soldTickets);
     }
 }
@@ -261,7 +269,7 @@ class KidsSession extends Session{
 class WeeklyTimeTable{
     private int WeeklyNumber;
     private String WeekRoster[][] = new String[7][7];
-    private String[] time = {"08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"};
+    private String[] Times = {"08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"};
     Session BookedShowings[][] = new Session[7][7];
     
     public WeeklyTimeTable(int weekNum){
@@ -271,19 +279,55 @@ class WeeklyTimeTable{
         }
     }
     
-    // public boolean checkAvailability(int day, int time){
-
-    // }
+    public boolean checkAvailability(int day, int time) throws Exception{
+        day--;
+        time--;
+        if(day > 7 || time > 7){
+            throw new Exception("Time or day is invalid");
+        }else{
+            if (BookedShowings[time][day] == null){
+                return true;
+            }
+        }
+        return false;
+    }
     
-    // public boolean checkAvailability(String day, String time){
+    public boolean checkAvailability(String day, String time) throws Exception{
+        String[] Days = {"Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-    // }
+        int numericalDay = 1;
+        boolean dayFound = false;
+        boolean timeFound = false;
+
+        for(String DayinWeek : Days){
+            if (DayinWeek == day){
+                dayFound = true;
+                break;
+            }
+            numericalDay++;
+        }
+        int numericalTime = 1;
+        for(String SingleTime : Times){
+            if (SingleTime == time){
+                timeFound = true;
+                break;
+            }
+            numericalTime++;
+        }
+        
+        if(dayFound == true && timeFound == true){
+            checkAvailability(numericalDay, numericalTime);
+            return true;
+        }else{
+            throw new Exception("Incorrect usage of time or day");
+        }
+    }
     
     public boolean addSession(Session s, int day, int time){
 
         day--;
         time--;
-        if(s.getIsKidsSession() != true || time < 5){
+        if(s.getIsKidsSession() != true && time < 5){
             String TitleFixed = s.getTitle().substring(0,7);
             WeekRoster[time][day] = String.format("%s  ", TitleFixed);
 
@@ -295,9 +339,37 @@ class WeeklyTimeTable{
         return false;
     }
     
-    // public boolean addSession(Session s, String day, String time){
+    public boolean addSession(Session s, String day, String time){
+        String[] Days = {"Moday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-    // }
+        int numericalDay = 1;
+        boolean dayFound = false;
+        boolean timeFound = false;
+
+        for(String DayinWeek : Days){
+            if (DayinWeek == day){
+                dayFound = true;
+                break;
+            }
+            numericalDay++;
+        }
+        int numericalTime = 1;
+        for(String SingleTime : Times){
+            if (SingleTime == time){
+                timeFound = true;
+                break;
+            }
+            numericalTime++;
+        }
+        
+        if(dayFound == true && timeFound == true){
+        }else{
+            return false;
+        }
+
+        addSession(s, numericalDay, numericalTime);
+        return true;
+    }
 
     public void showSessions(){
         //Formatting the start table
@@ -308,7 +380,7 @@ class WeeklyTimeTable{
         //Printing out the Table
         int i = 0;
         for (final Object[] row : WeekRoster) {
-            System.out.print(time[i]);
+            System.out.print(Times[i]);
             System.out.format("%19s%15s%15s%15s%15s%15s%15s%n", row);
             i++;
         }
@@ -327,7 +399,7 @@ class WeeklyTimeTable{
         //Printing out the Table
         int i = 0;
         for (final Object[] row : WeekRoster) {
-            System.out.print(time[i]);
+            System.out.print(Times[i]);
             System.out.format("%19s%15s%15s%15s%15s%15s%15s%n", row);
             for(int j=0; j<7; j++){
                 if(j == 0){
