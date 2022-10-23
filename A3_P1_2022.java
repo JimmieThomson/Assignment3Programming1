@@ -254,11 +254,10 @@ class WeeklyTimeTable{
     private int WeeklyNumber;
     private String WeekRoster[][] = new String[7][7];
     private String[] time = {"08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"};
-    private double TotalCostWeek;
+    Session BookedShowings[][] = new Session[7][7];
     
     public WeeklyTimeTable(int weekNum){
         WeeklyNumber = weekNum;
-        TotalCostWeek = 0;
         for (String[] row: WeekRoster){
             Arrays.fill(row, "    ---    ");
         }
@@ -279,8 +278,8 @@ class WeeklyTimeTable{
             TitleFixed = TitleFixed[0].split(":", 2);
             WeekRoster[time][day] = TitleFixed[0];
 
-            TotalCostWeek += s.profit();
 
+            BookedShowings[time][day] = s;
             return true;
         }
         System.out.println("not successful!");
@@ -311,7 +310,10 @@ class WeeklyTimeTable{
     }
     
     public void showSales(){
-        System.out.println(String.format("Total Cost of the Week: %,.0f", TotalCostWeek));
+
+        Session price =BookedShowings[5][4];
+        
+        System.out.println(price.profit());
     }
     
 }
