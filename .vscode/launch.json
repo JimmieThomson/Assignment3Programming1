@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch Test",
+            "request": "launch",
+            "mainClass": "Test",
+            "projectName": "Assignment3Programming1_288837d6"
+        },
+        {
+            "type": "java",
+            "name": "Launch A3_P1_2022",
+            "request": "launch",
+            "mainClass": "A3_P1_2022",
+            "projectName": "Assignment3Programming1_288837d6"
+        },
+        {
+            "type": "java",
             "name": "Launch A3_P1_2022",
             "request": "launch",
             "mainClass": "A3_P1_2022",
