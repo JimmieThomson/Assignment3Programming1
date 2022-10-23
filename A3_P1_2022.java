@@ -26,7 +26,7 @@ public class A3_P1_2022 {
             //Session s2 = new KidsSession(movieList[0]);  // Exception!
             Session s2 = new KidsSession(movieList[2]); 
             
-            week1.addSession(s2, 4, 6);  // not successful!
+            //week1.addSession(s2, 4, 6);  // not successful!
             week1.addSession(s2, 4, 5);
             week1.showSessions();
             
@@ -110,6 +110,9 @@ class Session{
         soldTickets = 0;
         SelectedMovie = movie;
     }
+    public int getTickets(){
+        return soldTickets;
+    }
 
     public boolean sellTickets(int qty){
         if(capacity < qty){
@@ -161,6 +164,9 @@ class SparseSession extends Session{
         capacity = 60;
         ticketPrice = price;
         soldTickets = 0;
+    }
+    public int getTickets(){
+        return soldTickets;
     }
     public String getTitle(){
         return SelectedMovie.getTitle();
@@ -235,7 +241,9 @@ class KidsSession extends Session{
             }
         }
     }
-
+    public int getTickets(){
+        return soldTickets;
+    }
     public boolean sellTickets(int qty){
         if(capacity < qty){
             System.out.println("not successful!");
@@ -273,10 +281,11 @@ class WeeklyTimeTable{
     
     public boolean addSession(Session s, int day, int time){
 
-        if(s.getIsKidsSession() != true || time < 6){
-            String[] TitleFixed = s.getTitle().split(",", 2);
-            TitleFixed = TitleFixed[0].split(":", 2);
-            WeekRoster[time][day] = TitleFixed[0];
+        day--;
+        time--;
+        if(s.getIsKidsSession() != true || time < 5){
+            String TitleFixed = s.getTitle().substring(0,7);
+            WeekRoster[time][day] = String.format("%s  ", TitleFixed);
 
 
             BookedShowings[time][day] = s;
@@ -310,10 +319,46 @@ class WeeklyTimeTable{
     }
     
     public void showSales(){
+        //Formatting the start table
+        System.out.println(String.format("%20s%15s%15s%15s%15s%15s%15s","Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"));
+        System.out.println("-----------------------------------------------------------------------------------------------------------------");
 
-        Session price =BookedShowings[5][4];
-        
-        System.out.println(price.profit());
+
+        //Printing out the Table
+        int i = 0;
+        for (final Object[] row : WeekRoster) {
+            System.out.print(time[i]);
+            System.out.format("%19s%15s%15s%15s%15s%15s%15s%n", row);
+            for(int j=0; j<7; j++){
+                if(j == 0){
+                    System.out.format("%19s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("x %s", String.valueOf(BookedShowings[i][j].getTickets()))));
+                }
+                else if (j  == 6){
+                    System.out.format("%15s%n", ((BookedShowings[i][j] == null) ? "       "  :  String.format("x %s", String.valueOf(BookedShowings[i][j].getTickets()))));
+                }else{
+                    System.out.format("%15s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("x %s", String.valueOf(BookedShowings[i][j].getTickets()))));
+                }
+            }
+            for(int j=0; j<7; j++){
+                if(j == 0){
+                    System.out.format("%19s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("$%s",String.valueOf(BookedShowings[i][j].profit()))));
+                }
+                else if (j  == 6){
+                    System.out.format("%15s%n", ((BookedShowings[i][j] == null) ? "       "  :  String.format("$%s",String.valueOf(BookedShowings[i][j].profit()))));
+                }else{
+                    System.out.format("%15s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("$%s",String.valueOf(BookedShowings[i][j].profit()))));
+                }
+            }
+            i++;
+        }
+        int Total = 0;
+        for(int k=0; k<7; k++){
+            for(int j=0; j<7; j++){
+                Total += ((BookedShowings[k][j] == null) ? 0  : BookedShowings[k][j].profit());
+            }
+        }
+
+        System.out.format("The total of this week is $%d", Total);
     }
     
 }
