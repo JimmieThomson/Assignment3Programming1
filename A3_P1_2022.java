@@ -49,6 +49,7 @@ class Movie {
     private String Movrating;
     private int Movfee;
 
+    //Movie Inil
     public Movie(String title, int duration, String rating, int fee) throws Exception{
         //Validating the variables
         Validation(duration, rating, fee);
@@ -58,13 +59,17 @@ class Movie {
         this.Movfee = fee;
     }
 
+    //Grabs Rating
     public String getRating(){
         return Movrating;
     }
+
+    //Grabs Title
     public String getTitle(){
         return Movtitle;
     }
 
+    //Validaes whether the Movie Exists
     void Validation (int duration, String rating, int fee) throws Exception{
         String[] Ratings = {"M", "MA", "G", "PG"};
 
@@ -76,16 +81,20 @@ class Movie {
         //Validating if the rating is real
         boolean Exist = false;
 
+        //Running through the variables to see if it Exists
         for (String variable : Ratings){
             if(rating == variable){
                 Exist = true;
             }
         }
         if (Exist == false){
+            //Throwing in case it doesn't
             throw new Exception("Rating does not exist");
         }
     }
 }
+
+//Default session
 class Session{
     private int capacity;
     private int ticketPrice;
@@ -109,10 +118,13 @@ class Session{
         soldTickets = 0;
         SelectedMovie = movie;
     }
+
+    //getsTicekets
     public int getTickets(){
         return soldTickets;
     }
 
+    //returns wether the tickets where put in and changes there variables
     public boolean sellTickets(int qty){
         if(capacity < qty){
             System.out.println("not successful!");
@@ -122,6 +134,7 @@ class Session{
         return true;
     }
     
+    //sets the profit total
     public int profit(){
         if(SelectedMovie.getTitle() == "Top Gun: Maverick"){
             return (ticketPrice * soldTickets) - 600;
@@ -129,9 +142,12 @@ class Session{
         return (ticketPrice * soldTickets);
     }
 
+    //gets Title
     public String getTitle(){
         return SelectedMovie.getTitle();
     }
+
+    //Gets if it's a kids class
     public boolean getIsKidsSession(){
         return Kids;
     }
@@ -150,6 +166,7 @@ class SparseSession extends Session{
     private Movie SelectedMovie;
     private boolean Kids;
 
+    //Sets the ini of the other class that extends session
     public SparseSession(Movie movie){
         super(movie);
         ValidateRating();
@@ -160,6 +177,8 @@ class SparseSession extends Session{
         SelectedMovie = movie;
         Kids = false;
     }
+
+    //Seperate ini in case there needs to be a price accociated with the tickets
     public SparseSession(Movie movie, int price){
         super(movie, price);
         SelectedMovie = movie;
@@ -167,13 +186,19 @@ class SparseSession extends Session{
         ticketPrice = price;
         soldTickets = 0;
     }
+    
+    //gets Ticket Prices
     public int getTickets(){
         return soldTickets;
     }
+
+    //Gets title of movie
     public String getTitle(){
         return SelectedMovie.getTitle();
     }
 
+    //Sets the tickets in the movie session and gets the amount
+    //Checks wether the tickets are available
     public boolean sellTickets(int qty){
         if(capacity < qty){
             System.out.println("not successful!");
@@ -182,7 +207,11 @@ class SparseSession extends Session{
         this.soldTickets = qty;
         return true;
     }
+
+    //Used for Kids class please ignore
     void ValidateRating(){}
+
+    //Sets total profit of the movie and tickets
     public int profit(){
         if(SelectedMovie.getTitle() == "Top Gun: Maverick"){
             return (ticketPrice * soldTickets) - 600 +startProfit;
@@ -207,6 +236,8 @@ class KidsSession extends Session{
     private Movie SelectedMovie;
     private boolean Kids;
 
+    //Kids class ini which also checks if the movie can be execepted with time and date
+    //Since it's a kids session
     public KidsSession(Movie movie) throws Exception{
         super(movie);
         SelectedMovie = movie;
@@ -217,10 +248,12 @@ class KidsSession extends Session{
         Kids = true;
     }
 
+    //Gets whether the session is a kids session
     public boolean getIsKidsSession(){
         return Kids;
     }
 
+    //Another ini to set price does the same thing as KidsSession
     public KidsSession(Movie movie, int price) throws Exception{
         super(movie, price);
         SelectedMovie = movie;
@@ -230,23 +263,29 @@ class KidsSession extends Session{
         soldTickets = 0;
     }
 
+    //Used to check wether the 
     void ValidateRating() throws Exception{
         //Make sure this is refered to later it needs to be as it's a requirement!
 
+        //This shouldn't exist but makes my life weird if i dont :)
         String[] Ratings = {"M", "MA", "G", "PG"};
 
         //Validating if the rating is real
         for (String variable : Ratings){
-            if(variable == "G" || variable == "PG"){
+            if(SelectedMovie.getRating() == "G" || SelectedMovie.getRating() == "PG"){
                 break;
             }else{
                 throw new Exception("Rating is too high");
             }
         }
     }
+
+    //Gets the tickets
     public int getTickets(){
         return soldTickets;
     }
+
+    //sets ticket amount and checks whether it can happen
     public boolean sellTickets(int qty){
         if(capacity < qty){
             System.out.println("not successful!");
@@ -256,6 +295,7 @@ class KidsSession extends Session{
         return true;
     }
     
+    //Gets profit total of the movie session
     public int profit(){
         if(SelectedMovie.getTitle() == "Top Gun: Maverick"){
             return (ticketPrice * soldTickets) - 600;
@@ -269,12 +309,14 @@ class WeeklyTimeTable{
     private String[] Times = {"08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"};
     Session BookedShowings[][] = new Session[7][7];
     
+    //Sets ini for the class
     public WeeklyTimeTable(int weekNum){
         for (String[] row: WeekRoster){
             Arrays.fill(row, "    ---    ");
         }
     }
     
+    //Used for numbered varibles to check whether a session is avaiable
     public boolean checkAvailability(int day, int time) throws Exception{
         day--;
         time--;
@@ -288,6 +330,7 @@ class WeeklyTimeTable{
         return false;
     }
     
+    //Checks wether the availability alphabeticaly, it transfers the alph to numerical to send to the numerical availability 
     public boolean checkAvailability(String day, String time) throws Exception{
         String[] Days = {"Monday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
@@ -295,6 +338,7 @@ class WeeklyTimeTable{
         boolean dayFound = false;
         boolean timeFound = false;
 
+        //Cycles to find where the day sits numerically
         for(String DayinWeek : Days){
             if (DayinWeek == day){
                 dayFound = true;
@@ -302,7 +346,9 @@ class WeeklyTimeTable{
             }
             numericalDay++;
         }
+
         int numericalTime = 1;
+        //Cycles to find where the Time sits numerically
         for(String SingleTime : Times){
             if (SingleTime == time){
                 timeFound = true;
@@ -311,6 +357,7 @@ class WeeklyTimeTable{
             numericalTime++;
         }
         
+        //Makes sure no issues can go to the numerical side
         if(dayFound == true && timeFound == true){
             checkAvailability(numericalDay, numericalTime);
             return true;
@@ -319,10 +366,12 @@ class WeeklyTimeTable{
         }
     }
     
+    //Adds a session to the system numerically
     public boolean addSession(Session s, int day, int time){
 
         day--;
         time--;
+        //Validates whether it can fit in the ini arrays
         if(s.getIsKidsSession() != true && time < 5){
             String TitleFixed = s.getTitle().substring(0,7);
             WeekRoster[time][day] = String.format("%s  ", TitleFixed);
@@ -335,6 +384,7 @@ class WeeklyTimeTable{
         return false;
     }
     
+    //Adds a session to the system alphabetically
     public boolean addSession(Session s, String day, String time){
         String[] Days = {"Moday","Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
@@ -342,6 +392,7 @@ class WeeklyTimeTable{
         boolean dayFound = false;
         boolean timeFound = false;
 
+        //Gets the days numerically
         for(String DayinWeek : Days){
             if (DayinWeek == day){
                 dayFound = true;
@@ -350,6 +401,7 @@ class WeeklyTimeTable{
             numericalDay++;
         }
         int numericalTime = 1;
+        //Gets the Time numerically
         for(String SingleTime : Times){
             if (SingleTime == time){
                 timeFound = true;
@@ -358,11 +410,11 @@ class WeeklyTimeTable{
             numericalTime++;
         }
         
+        //Validates whether if it was acually found in the system arrays
         if(dayFound == true && timeFound == true){
         }else{
             return false;
         }
-
         addSession(s, numericalDay, numericalTime);
         return true;
     }
@@ -398,6 +450,8 @@ class WeeklyTimeTable{
             System.out.print(Times[i]);
             System.out.format("%19s%15s%15s%15s%15s%15s%15s%n", row);
             for(int j=0; j<7; j++){
+                //THIS IS TO PRINT OUT THE TICKET COSTS
+                //Don't look if you want to keep your sanity
                 if(j == 0){
                     System.out.format("%19s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("x %s", String.valueOf(BookedShowings[i][j].getTickets()))));
                 }
@@ -408,6 +462,8 @@ class WeeklyTimeTable{
                 }
             }
             for(int j=0; j<7; j++){
+                //Same thing however for total price
+                //Pain
                 if(j == 0){
                     System.out.format("%19s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("$%s",String.valueOf(BookedShowings[i][j].profit()))));
                 }
@@ -420,12 +476,14 @@ class WeeklyTimeTable{
             i++;
         }
         int Total = 0;
+        //Sets absolute total of the week
         for(int k=0; k<7; k++){
             for(int j=0; j<7; j++){
                 Total += ((BookedShowings[k][j] == null) ? 0  : BookedShowings[k][j].profit());
             }
         }
 
+        //formates it to the screen
         System.out.format("The total of this week is $%d", Total);
     }
     
