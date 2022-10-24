@@ -1,4 +1,13 @@
+/*  Put Your Student ID, Name here 
+
+   S3947963
+
+   James Thomson
+
+*/
+
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class A3_P1_2022 {
     public static void main(String[] args) {
@@ -10,31 +19,10 @@ public class A3_P1_2022 {
             movieList[2] = new Movie("Monsters, Inc.", 92, "G", 90);
             movieList[3] = new Movie("Coraline", 100, "PG", 40);
             movieList[4] = new Movie("Goodbye", 140, "PG", 60);
-            
-            WeeklyTimeTable week1 = new WeeklyTimeTable(1);
-            // WeeklyTimeTable week2 = new WeeklyTimeTable(1);  // Exception!
+            GUI.StartScreen();
 
-            System.out.println(week1.checkAvailability(1,1));
-            //System.out.println(week1.checkAvailability(1,9));  // Exception!
-
-            System.out.println(week1.checkAvailability("Monday", "14:00"));
-           //System.out.println(week1.checkAvailability("Monday", "8:00")); //Exception!
-
-            Session s1 = new Session(movieList[0], 18);
-            week1.addSession(s1, 2, 2);
-            
-            //Session s2 = new KidsSession(movieList[0]);  // Exception!
-            Session s2 = new KidsSession(movieList[2]); 
-            
-            week1.addSession(s2, 4, 6);  // not successful!
-            week1.addSession(s2, 4, 5);
-            week1.showSessions();
-            
-            s1.sellTickets(90);          // not successful!
-            s1.sellTickets(30);
-            s2.sellTickets(25);
-            
-            week1.showSales();
+            System.out.print("\n");
+            GUI.GetSelection(movieList);
         }
         catch(Exception e){
             System.err.println(e.getMessage());
@@ -59,6 +47,11 @@ class Movie {
         this.Movfee = fee;
     }
 
+    //Gets Duration
+    public String getDuration(){
+        return String.format("%smin", Movduration);
+    }
+
     //Grabs Rating
     public String getRating(){
         return Movrating;
@@ -67,6 +60,11 @@ class Movie {
     //Grabs Title
     public String getTitle(){
         return Movtitle;
+    }
+
+    //Gets fee
+    public String getFee(){
+        return String.format("$%s", Movfee);
     }
 
     //Validaes whether the Movie Exists
@@ -93,8 +91,6 @@ class Movie {
         }
     }
 }
-
-//Default session
 class Session{
     private int capacity;
     private int ticketPrice;
@@ -117,6 +113,11 @@ class Session{
         ticketPrice = 15;
         soldTickets = 0;
         SelectedMovie = movie;
+    }
+
+    //Grabs Capacity
+    public int getCapacity(){
+        return capacity;
     }
 
     //getsTicekets
@@ -186,6 +187,11 @@ class SparseSession extends Session{
         ticketPrice = price;
         soldTickets = 0;
     }
+
+    //Grabs Capacity
+    public int getCapacity(){
+        return capacity;
+    }
     
     //gets Ticket Prices
     public int getTickets(){
@@ -253,6 +259,11 @@ class KidsSession extends Session{
         return Kids;
     }
 
+    //Grabs Capacity
+    public int getCapacity(){
+        return capacity;
+    }
+
     //Another ini to set price does the same thing as KidsSession
     public KidsSession(Movie movie, int price) throws Exception{
         super(movie, price);
@@ -303,11 +314,10 @@ class KidsSession extends Session{
         return (ticketPrice * soldTickets);
     }
 }
-
 class WeeklyTimeTable{
     private String WeekRoster[][] = new String[7][7];
     private String[] Times = {"08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"};
-    Session BookedShowings[][] = new Session[7][7];
+    private Session BookedShowings[][] = new Session[7][7];
     
     //Sets ini for the class
     public WeeklyTimeTable(int weekNum){
@@ -435,7 +445,35 @@ class WeeklyTimeTable{
     }
     
     public void showTickets(){
+        int i = 0;
+        System.out.println(String.format("%20s%15s%15s%15s%15s%15s%15s","Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"));
+        System.out.println("-----------------------------------------------------------------------------------------------------------------");
+        for (final Object[] row : WeekRoster) {
+            System.out.print(Times[i]);
+            System.out.format("%19s%15s%15s%15s%15s%15s%15s%n", row);
+            for(int j=0; j<7; j++){
+                //THIS IS TO PRINT OUT THE TICKET COSTS
+                //Don't look if you want to keep your sanity
+                if(j == 0){
+                    System.out.format("%19s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("%s", String.valueOf(BookedShowings[i][j].getCapacity() - BookedShowings[i][j].getTickets()))));
+                }
+                else if (j  == 6){
+                    System.out.format("%15s%n", ((BookedShowings[i][j] == null) ? "       "  :  String.format("%s", String.valueOf(BookedShowings[i][j].getCapacity() - BookedShowings[i][j].getTickets()))));
+                }else{
+                    System.out.format("%15s", ((BookedShowings[i][j] == null) ? "       "  :  String.format("%s", String.valueOf(BookedShowings[i][j].getCapacity() - BookedShowings[i][j].getTickets()))));
+                }
+            }
+            i++;
+        }
+    }
 
+    //Gets Session information
+    public void setTickets(int day, int time, int Tickets){
+        BookedShowings[time][day].sellTickets(Tickets);
+    }
+     //Gets Session information
+    public Session GetBookedShowing(int day, int time){
+        return BookedShowings[day][time];
     }
     
     public void showSales(){
@@ -484,7 +522,134 @@ class WeeklyTimeTable{
         }
 
         //formates it to the screen
-        System.out.format("The total of this week is $%d", Total);
+        System.out.format("The total of this week is $%d%n", Total);
     }
+}
+class GUI{
+    private static WeeklyTimeTable week1 = new WeeklyTimeTable(1);
+    private static Scanner Scanner = new Scanner(System.in);
     
+    public static void StartScreen(){
+        System.out.println("1.Show the timetable of the week");
+        System.out.println("2.Show available tickets of the week");
+        System.out.println("3.Show sales report of the week");
+        System.out.println("4.Add a session by day and time");
+        System.out.println("5.Sale tickets by day and time");
+        System.out.println("6.Quit");
+    }
+    public static void GetSelection(Movie[] movieList) throws Exception{
+        while(true){
+                String Input  = Scanner.nextLine();
+                //Gets Output
+                if("1".equals(Input)){
+                    week1.showSessions();
+                    StartScreen();
+                }else if("2".equals(Input)){
+                    week1.showTickets();
+                    StartScreen();
+                }else if("3".equals(Input)){
+                    week1.showSales();
+                    StartScreen();
+                }else if("4".equals(Input)){
+                    AddSession(movieList);
+                    StartScreen();
+                }else if("5".equals(Input)){
+                    SaleTickets();
+                    StartScreen();
+                } else if("6".equals(Input)){
+                    break;
+                }else{
+                    System.out.println("Not valid input, try agappin ...");
+                }
+        }   
+        Scanner.close();
+    }
+
+    //Unfortunatly methods including this one only work in "1 1" form rather than the "Mon 18:00" form, however it
+    //Does work if you hard code the values lots of bugs and not enough time to fix them corners are cut
+    //in this version
+    static void SaleTickets(){
+        week1.showTickets();
+        System.out.println("Select The Time and day");
+
+        String Session  = Scanner.nextLine();
+        String[] SessionArray = Session.split(" ");
+
+        Session  = Scanner.nextLine();
+        try{
+            week1.setTickets((Integer.parseInt(SessionArray[0]) - 1), (Integer.parseInt(SessionArray[1]) - 1), Integer.parseInt(Session));
+            System.out.println("Succesfull Selling!");
+        }catch(Exception e){
+            System.out.println("Unsuccesfull Selling because session does not exist");
+        }
+    }
+
+    //Adds a Session by date and time
+    static void AddSession(Movie[] movieList) throws Exception{
+        Session SessionItem;
+        Movie SelectedMovie;
+        int i = 1;
+            System.out.print("\n");
+            System.out.println("Select a movie from below:");
+
+            for(Movie layer : movieList){
+                System.out.format("%d. %-20s %-5s %-7s %s%n",i, layer.getTitle(), layer.getDuration(), layer.getRating(), layer.getFee());
+                i++;
+            }
+            while(true){
+                try{
+                    int MoveNumb  = Scanner.nextInt();
+                    SelectedMovie = movieList[MoveNumb - 1];
+                    break;
+                }catch(Exception e){
+                    System.out.println("Invalid input, try again...");
+                }
+            }
+            System.out.println("Is this a normal session? Y/N");
+            Scanner.nextLine();
+            while(true){
+                String Session  = Scanner.nextLine();
+                if(Session.equals("Y")){
+                    SessionItem = new Session(SelectedMovie); 
+                    break;
+                }else if(Session.equals("N")){
+                    System.out.println("Is this a kids session? Y/N");
+                    while(true){
+                        Session  = Scanner.nextLine();
+                        if(Session.equals("Y")){
+                            SessionItem = new KidsSession(SelectedMovie); 
+                            break;
+                        }else if(Session.equals("N")){
+                            SessionItem = new SparseSession(SelectedMovie); 
+                            break;
+                        }else{
+                            System.out.println("Invalid input, try again...");
+                        }
+                    }
+                    break;
+                }else{
+                    System.out.println("Invalid input, try again...:");
+                }
+            }
+            System.out.println("Select a movie from below:");
+            week1.showSessions();
+
+
+            while(true){
+                String Session  = Scanner.nextLine();
+                String[] SessionArray = Session.split(" ");
+                    try{
+                            try{
+                            week1.addSession(SessionItem, Integer.parseInt(SessionArray[0]), Integer.parseInt(SessionArray[1]));
+                            System.out.println("Session created");
+                                break;
+                            }catch(Exception e){
+                                week1.addSession(SessionItem, SessionArray[0], SessionArray[1]);
+                                break;
+                            }
+                        }catch(Exception e){
+                        System.err.println(e.getMessage());
+                    }
+            }
+    }
 }
